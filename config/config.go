@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
@@ -31,14 +32,15 @@ func GetDBConfig(cli *clientv3.Client, node string, updateConfig func(*DbConfig)
 	if node != "master" && node != "slave" {
 		return errors.New("Node can only be master or slave.")
 	}
-	key := "home/config/mysql/account/" + node + ".toml"
+	key := "root/config/mysql/" + GetSvcName("") + node + ".toml"
+	fmt.Println(key)
 	// 初始化master连接
 	etcdResp, err := cli.Get(context.Background(), key, clientv3.WithPrefix())
 	if err != nil {
 		return err
 	}
 	if len(etcdResp.Kvs) == 0 {
-		return errors.New("The database configuration MySQL master node is configured to be empty.")
+		return errors.New("The database configuration MySQL " + node + " node is configured to be empty.")
 	}
 	dbConfig := new(DbConfig)
 	err = toml.Unmarshal(etcdResp.Kvs[0].Value, dbConfig)
@@ -81,7 +83,7 @@ type RedisConfg struct {
 
 // GetRedisConfg 获取redis配置
 func GetRedisConfg(cli *clientv3.Client, updateConfig func(*RedisConfg)) error {
-	key := "home/config/redis/cfg.toml"
+	key := "root/config/redis/" + GetSvcName("") + "cfg.toml"
 	// 初始化master连接
 	etcdResp, err := cli.Get(context.Background(), key, clientv3.WithPrefix())
 	if err != nil {

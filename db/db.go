@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/shiguanghuxian/micro-common/config"
 	"github.com/shiguanghuxian/micro-common/etcdcli"
@@ -52,7 +53,7 @@ func initDB() {
 		log.Logger.Infow("Connect database master node successfully")
 	})
 	if err != nil {
-		log.Logger.Panicw("Get db master configuration error", "err", err)
+		log.Logger.Panicw("Get db configuration error", "err", err)
 	}
 
 	// 初始化SlaveDB
