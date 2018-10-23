@@ -3,7 +3,6 @@ package config
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
@@ -32,8 +31,8 @@ func GetDBConfig(cli *clientv3.Client, node string, updateConfig func(*DbConfig)
 	if node != "master" && node != "slave" {
 		return errors.New("Node can only be master or slave.")
 	}
-	key := "root/config/mysql/" + GetSvcName("") + node + ".toml"
-	fmt.Println(key)
+	key := "root/config/" + GetSvcName("") + "mysql/" + node + ".toml"
+	// fmt.Println(key)
 	// 初始化master连接
 	etcdResp, err := cli.Get(context.Background(), key, clientv3.WithPrefix())
 	if err != nil {
@@ -83,7 +82,7 @@ type RedisConfg struct {
 
 // GetRedisConfg 获取redis配置
 func GetRedisConfg(cli *clientv3.Client, updateConfig func(*RedisConfg)) error {
-	key := "root/config/redis/" + GetSvcName("") + "cfg.toml"
+	key := "root/config/" + GetSvcName("") + "redis/cfg.toml"
 	// 初始化master连接
 	etcdResp, err := cli.Get(context.Background(), key, clientv3.WithPrefix())
 	if err != nil {
